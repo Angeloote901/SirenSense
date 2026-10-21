@@ -1,4 +1,5 @@
 import sys
+import os
 import math
 import pygame
 
@@ -47,7 +48,10 @@ ambulance_x = center_x + 180
 ambulance_y = center_y - 180
 ambulance_speed = 5
 
-# Load directional audio clips with console fallback handling
+# Define the subfolder name where your audio is housed
+AUDIO_FOLDER = "audio"
+
+# Load directional audio clips from the subfolder with console fallback handling
 sounds = {}
 sound_files = {
     "front": "Front.mp3",
@@ -57,11 +61,13 @@ sound_files = {
 }
 
 for direction, file_name in sound_files.items():
+    # Builds the clean subfolder path (e.g., "audio/Front.mp3")
+    full_path = os.path.join(AUDIO_FOLDER, file_name)
     try:
-        sounds[direction] = pygame.mixer.Sound(file_name)
+        sounds[direction] = pygame.mixer.Sound(full_path)
     except FileNotFoundError:
         sounds[direction] = None
-        print(f"Warning: '{file_name}' not found. Using console fallback for {direction} alert.")
+        print(f"Warning: '{full_path}' not found. Using console fallback for {direction} alert.")
 
 font = pygame.font.SysFont(None, 48)
 
@@ -170,24 +176,20 @@ while running:
     blink_is_on = (blink_timer // 18) % 2 == 0
 
     # 4. SOUND TRIGGER LOGIC
-    # Play if we transitioned into range, OR if the ambulance moved to a brand new direction quad
     if state["active"] and current_active_direction != last_played_direction:
         sound_clip = sounds.get(current_active_direction)
         
         if sound_clip:
             sound_clip.play()
         else:
-            # Fallback printed text to console if your custom file isn't in the directory yet
             print(f"\a--- VOICE ALERT: 'Caution, emergency vehicles {current_active_direction}' ---")
             
-        # Lock it down so it only plays once for this specific approach angle
         last_played_direction = current_active_direction
 
     # 3. DRAW
     screen.fill(COLOR_BLACK)
 
     # Visual Layout References (Square Center Box & Active Detection Radius Circle)
-    # The bounding square perfectly wraps the 80-pixel structural scale of the arrows
     pygame.draw.rect(screen, COLOR_DARK_GREEN, (center_x - 40, center_y - 40, 80, 80), 1)
     pygame.draw.circle(screen, COLOR_DARK_GREEN, (center_x, center_y), RADAR_RADIUS, 1)
 
