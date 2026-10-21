@@ -1,6 +1,2 @@
-# Ignore the organized audio directory
-audio/
-
-#Ignore any miscellaneous audio files in the root just in case
-*.mp3
-*.wav
+__pycache__/
+venv/
