@@ -29,7 +29,7 @@ python Pseudo_arrow.py
 
 The emergency vehicle is simulated. Move it yourself to test the alerts:
 - **Radar demo:** arrow keys
-- **Arrow demo:** W, A, S, D
+- **Arrow demo:** arrow keys
 
 ## Audio
 
