@@ -1,0 +1,51 @@
+SETUP
+  (same window, center, colors, RADIUS, state, blink_timer, was_active as radar)
+  arrow_distance = 200                 # how far each arrow sits from center
+  lit = { front: false, back: false, left: false, right: false }
+
+FUNCTION draw_arrow(direction, color)
+  # pick the arrow's position around the center
+  front -> point up,    placed at (center_x, center_y - arrow_distance)
+  back  -> point down,  placed at (center_x, center_y + arrow_distance)
+  left  -> point left,  placed at (center_x - arrow_distance, center_y)
+  right -> point right, placed at (center_x + arrow_distance, center_y)
+  # build the arrow shape from a list of points (triangle or arrow polygon)
+  draw polygon with those points
+
+EACH FRAME
+
+  1. HANDLE INPUT
+     if window closed -> quit
+     WASD moves the fake ambulance
+     # WASD instead of arrow keys, so it doesn't get confused with the on-screen arrows
+
+  2. UPDATE STATE
+     dx, dy, distance                        # same math as before
+     state.active = (distance <= RADIUS)
+
+     reset every lit[...] to false
+     if state.active:
+        # turn the position into 4 "how much" numbers between -1 and 1
+        right_amount = dx / distance
+        left_amount  = -dx / distance
+        back_amount  = dy / distance          # screen y grows downward
+        front_amount = -dy / distance
+        # any direction above 0.4 lights up
+        # clear directions light one arrow, diagonals light two
+        if front_amount > 0.4 -> lit.front = true
+        (same for back, left, right)
+
+     blink_timer = blink_timer + 1
+
+  3. DRAW
+     fill background
+     draw car at center
+     for each direction:
+        if lit[direction] AND blink is on -> draw_arrow(direction, ALERT_COLOR)
+        else                              -> draw_arrow(direction, IDLE_COLOR)
+     if active -> show "PULL OVER SAFELY"
+     draw a small gray dot for the ambulance in a corner mini-view (practice only)
+     update display
+
+  4. SOUND
+     (same as before: play only when active flips from false to true)

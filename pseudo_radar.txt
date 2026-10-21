@@ -1,0 +1,39 @@
+SETUP
+  open a window (800x800)
+  center = middle of the window          # the driver's car
+  radar_radius = 300 pixels              # the detection range
+  state = { active: false, angle: 0, distance: 0 }
+  sweep_angle = 0
+  blink_timer = 0
+
+EACH FRAME (60 times per second)
+
+  1. HANDLE INPUT
+     if the user closes the window -> quit
+     if arrow keys pressed -> move the fake ambulance position
+       (this stands in for real detection while you practice)
+
+  2. UPDATE STATE
+     dx = ambulance_x - center_x
+     dy = ambulance_y - center_y
+     distance = sqrt(dx*dx + dy*dy)
+     angle = atan2(dy, dx)
+     state.active = (distance <= radar_radius)
+     sweep_angle = sweep_angle + 3 degrees
+     blink_timer = blink_timer + 1 frame
+
+  3. DRAW (back to front, order matters)
+     fill the background black
+     draw 3 circles around center (the radar rings)
+     draw the sweep line from center at sweep_angle
+     draw the driver's car at center
+     if state.active:
+        if (blink_timer // 18) is even:     # on/off every ~0.3 sec
+           draw red dot at ambulance position
+        show text "PULL OVER SAFELY"
+     update the display
+
+  4. SOUND
+     if state.active just changed from false to true:
+        play "Pull over safely" clip once
+        # only on the change, or it repeats every frame
